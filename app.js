@@ -1,7 +1,7 @@
 const express = require('express');
 const session = require('express-session');
 const csrf = require('csurf');
-const helmet = require('helmet');
+// const helmet = require('helmet');
 const csrfProtection = csrf();
 const app = express();
 const AppError = require('./util/appError');
@@ -16,7 +16,7 @@ const store = new MongoDBStore({
 });
 
 // Security middleware to help protect from xss and other attacks.
-app.use(helmet());
+// app.use(helmet());
 
 // Allows for parsing incoming post requests.
 app.use(bodyParser.urlencoded({ extended: false }));
