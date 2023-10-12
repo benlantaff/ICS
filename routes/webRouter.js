@@ -5,7 +5,7 @@ const webController = require('../controllers/webController');
 const { routeProtection } = require('../middleware/customMiddleware');
 
 // Index
-router.route('/').get(webController.renderHomePage);
+router.route('/').get(routeProtection,webController.renderHomePage);
 
 // Authentication
 router.route('/login').get(webController.renderLoginPage);
