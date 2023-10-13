@@ -1,33 +1,56 @@
-const crypto = require('crypto');
-const bcrypt = require('bcryptjs');
-const User = require('../models/user');
-const utilities = require('../util/utilites');
-const { validationResult } = require('express-validator');
-const AppError = require('../util/appError');
+const crypto = require("crypto");
+const bcrypt = require("bcryptjs");
+const User = require("../models/user");
+const Item = require("../models/item");
+const utilities = require("../util/utilites");
+const { validationResult } = require("express-validator");
+const AppError = require("../util/appError");
 
 exports.renderHomePage = (req, res) => {
-  res.render('index');
+  res.render("index");
 };
 
 exports.renderItemsPage = (req, res) => {
-  res.render('items');
+  res.render("items");
 };
 
 exports.renderProfilePage = (req, res, next) => {
   if (!req.session.user) {
-    next(new AppError('No user found.', 500));
+    next(new AppError("No user found.", 500));
   }
-  res.render('profile');
+  res.render("profile");
 };
 
 exports.renderLoginPage = (req, res) => {
   if (req.session.isLoggedIn) {
-    return res.redirect('/');
+    return res.redirect("/");
   }
 
-  res.render('login', {
-    errorMessage: '',
+  res.render("login", {
+    errorMessage: "",
   });
+};
+
+exports.createItem = (req, res, next) => {
+  let name = req.body.name;
+  let unitOfMeasure = req.body.unitOfMeasure;
+  let sourcedFrom = req.body.sourcedFrom;
+  let price = req.body.price.replace(/[&\/\\#,+()$~%'":*?<>{}]/g, "");
+
+  try {
+    const item = new Item({
+      name: name,
+      unitOfMeasure: unitOfMeasure,
+      sourcedFrom: sourcedFrom,
+      price: price,
+    });
+
+    item.save();
+  } catch (err) {
+    console.log(err);
+    next(new AppError("Invalid item error", 500));
+  }
+  return res.redirect("/items");
 };
 
 exports.postLogin = (req, res, next) => {
@@ -36,8 +59,8 @@ exports.postLogin = (req, res, next) => {
 
   User.findOne({ email: email }).then((user) => {
     if (!user) {
-      return res.render('login', {
-        errorMessage: 'Invalid email or password',
+      return res.render("login", {
+        errorMessage: "Invalid email or password",
       });
     }
     bcrypt
@@ -47,38 +70,38 @@ exports.postLogin = (req, res, next) => {
           req.session.isLoggedIn = true;
           req.session.user = user;
           return req.session.save((err) => {
-            return res.redirect('/');
+            return res.redirect("/");
           });
         }
-        return res.render('login', {
-          errorMessage: 'Invalid email or password',
+        return res.render("login", {
+          errorMessage: "Invalid email or password",
         });
       })
       .catch((err) => {
-        next(new AppError('Login Error', 500));
+        next(new AppError("Login Error", 500));
       });
   });
 };
 
 exports.getLogout = (req, res) => {
   req.session.destroy(() => {
-    res.redirect('/');
+    res.redirect("/");
   });
 };
 
 exports.renderCreateAccountPage = (req, res, next) => {
   if (req.session.isLoggedIn) {
-    return res.redirect('/');
+    return res.redirect("/");
   }
-  res.render('createAccount', { errorMessage: '' });
+  res.render("createAccount", { errorMessage: "" });
 };
 
 exports.renderVerifyEmailPage = (req, res, next) => {
   if (req.session.isLoggedIn) {
-    return res.redirect('/');
+    return res.redirect("/");
   }
-  res.render('verifyEmail', {
-    errorMessage: '',
+  res.render("verifyEmail", {
+    errorMessage: "",
     verificationEmail: req.session.verificationEmail,
   });
 };
@@ -92,25 +115,25 @@ exports.postVerifyEmailPage = (req, res, next) => {
         userDoc.verified = true;
         userDoc.verificationCode = undefined;
         userDoc.save();
-        return res.redirect('/login');
+        return res.redirect("/login");
       }
-      return res.render('verifyEmail', {
-        errorMessage: 'That token is not valid.',
+      return res.render("verifyEmail", {
+        errorMessage: "That token is not valid.",
       });
     })
     .catch((err) => {
-      next(new AppError('Email verification error', 500));
+      next(new AppError("Email verification error", 500));
     });
 };
 
 exports.postCreateAccountPage = (req, res, next) => {
   let email = req.body.email;
   let password = req.body.password;
-  req.session.verificationEmail = '';
+  req.session.verificationEmail = "";
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(422).render('createAccount', {
+    return res.status(422).render("createAccount", {
       errorMessage: errors.array()[0].msg,
     });
   }
@@ -118,8 +141,8 @@ exports.postCreateAccountPage = (req, res, next) => {
   User.findOne({ email: email })
     .then((userDoc) => {
       if (userDoc) {
-        return res.render('createAccount', {
-          errorMessage: 'Email address is already taken.',
+        return res.render("createAccount", {
+          errorMessage: "Email address is already taken.",
         });
       }
       let code = utilities.generateVerificationCode(6);
@@ -138,39 +161,39 @@ exports.postCreateAccountPage = (req, res, next) => {
           try {
             utilities.sendEmail({
               email: email,
-              subject: 'Verify your email.',
-              message: 'Verification code: ' + code,
+              subject: "Verify your email.",
+              message: "Verification code: " + code,
             });
           } catch (err) {
-            next(new AppError('Error sending email', 500));
+            next(new AppError("Error sending email", 500));
           }
 
           req.session.verificationEmail = email;
-          res.redirect('/verifyEmail');
+          res.redirect("/verifyEmail");
         });
     })
     .catch((err) => {
-      next(new AppError('Create account error', 500));
+      next(new AppError("Create account error", 500));
     });
 };
 
 exports.getReset = (req, res, next) => {
-  res.render('reset', {
-    errorMessage: '',
+  res.render("reset", {
+    errorMessage: "",
   });
 };
 
 exports.postReset = (req, res, next) => {
   crypto.randomBytes(32, (err, buffer) => {
     if (err) {
-      next(new AppError('Token generation', 500));
+      next(new AppError("Token generation", 500));
     }
-    const token = buffer.toString('hex');
+    const token = buffer.toString("hex");
     User.findOne({ email: req.body.email })
       .then((user) => {
         if (!user) {
-          return res.render('reset', {
-            errorMessage: 'No account with that email found.',
+          return res.render("reset", {
+            errorMessage: "No account with that email found.",
           });
         }
         user.resetToken = token;
@@ -179,18 +202,18 @@ exports.postReset = (req, res, next) => {
         try {
           utilities.sendEmail({
             email: req.body.email,
-            subject: 'Password reset',
+            subject: "Password reset",
             message: `Password reset link: ${utilities.host}/reset/${token}`, // Replace this with your own house
           });
         } catch (err) {
-          next(new AppError('Send email error', 500));
+          next(new AppError("Send email error", 500));
         }
 
         user.save();
-        res.redirect('/');
+        res.redirect("/");
       })
       .catch((err) => {
-        next(new AppError('Reset password error', 500));
+        next(new AppError("Reset password error", 500));
       });
   });
 };
@@ -201,19 +224,19 @@ exports.getNewPassword = (req, res, next) => {
   User.findOne({ resetToken: token, resetTokenExpiration: { $gt: Date.now() } })
     .then((user) => {
       if (!user) {
-        return res.render('reset', {
-          errorMessage: 'Invalid token.  Check your email and try again.',
+        return res.render("reset", {
+          errorMessage: "Invalid token.  Check your email and try again.",
         });
       }
 
-      res.render('new-password', {
-        errorMessage: '',
+      res.render("new-password", {
+        errorMessage: "",
         userId: user._id.toString(),
         passwordToken: token,
       });
     })
     .catch((err) => {
-      next(new AppError('Error creating new password', 500));
+      next(new AppError("Error creating new password", 500));
     });
 };
 
@@ -239,16 +262,16 @@ exports.postNewPassword = (req, res, next) => {
       return resetUser.save();
     })
     .then((result) => {
-      res.redirect('/login');
+      res.redirect("/login");
     })
     .catch((err) => {
-      next(new AppError('Error creating new password', 500));
+      next(new AppError("Error creating new password", 500));
     });
 };
 
 exports.getResend = (req, res, next) => {
-  res.render('resend', {
-    errorMessage: '',
+  res.render("resend", {
+    errorMessage: "",
   });
 };
 
@@ -263,20 +286,20 @@ exports.postResend = (req, res, next) => {
         try {
           utilities.sendEmail({
             email: req.body.email,
-            subject: 'Verify your email.',
-            message: 'Verification code: ' + code,
+            subject: "Verify your email.",
+            message: "Verification code: " + code,
           });
         } catch (err) {
-          next(new AppError('Error sending email', 500));
+          next(new AppError("Error sending email", 500));
         }
 
-        return res.redirect('/verifyEmail');
+        return res.redirect("/verifyEmail");
       }
-      return res.render('resend', {
-        errorMessage: 'No account with that email found.',
+      return res.render("resend", {
+        errorMessage: "No account with that email found.",
       });
     })
     .catch((err) => {
-      next(new AppError('Error resending verification code.', 500));
+      next(new AppError("Error resending verification code.", 500));
     });
 };
