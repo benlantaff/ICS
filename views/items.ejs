@@ -445,7 +445,8 @@
                   <div class="card mb-4">
                     
                     <div class="card-body">
-                      <form>
+                      <form id="formAuthentication" class="mb-3" action="/createItem" method="POST">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                         <div class="mb-3">
                           <label class="form-label" for="name">Name</label>
                           <input type="text" class="form-control" name="name" id="name" placeholder="Eggs" />
@@ -455,16 +456,16 @@
                         <label for="unitOfMeasure" class="form-label">Unit of Measure</label>
                         <select class="form-select" name="unitOfMeasure" id="unitOfMeasure" aria-label="unitOfMeasure">
                           <option selected="">Open this select menu</option>
-                          <option value="1">Box</option>
-                          <option value="2">Carton</option>
-                          <option value="3">Each</option>
-                          <option value="4">Package</option>
-                          <option value="5">Bag</option>
-                          <option value="6">Tube</option>
-                          <option value="7">Dozen</option>
-                          <option value="8">Case</option>
-                          <option value="9">Gallon</option>
-                          <option value="10">Jar</option>
+                          <option value="Box">Box</option>
+                          <option value="Carton">Carton</option>
+                          <option value="Each">Each</option>
+                          <option value="Package">Package</option>
+                          <option value="Bag">Bag</option>
+                          <option value="Tube">Tube</option>
+                          <option value="Dozen">Dozen</option>
+                          <option value="Case">Case</option>
+                          <option value="Gallon">Gallon</option>
+                          <option value="Jar">Jar</option>
                         </select>
                       </div>
 
@@ -485,8 +486,7 @@
                           <label class="form-label" for="price">Price</label>
                           <input type="text" class="form-control" name="price" id="price" placeholder="2.98" />
                         </div>
-
-                      </form>
+                        
                     </div>
                   </div>
                 </div>
@@ -494,8 +494,8 @@
               </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button class="btn btn-primary d-grid w-100" type="submit">Save</button>
+      </form>
       </div>
     </div>
   </div>
