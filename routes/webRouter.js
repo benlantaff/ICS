@@ -6,6 +6,7 @@ const { routeProtection } = require('../middleware/customMiddleware');
 
 // Index
 router.route('/').get(routeProtection,webController.renderHomePage);
+router.route('/items').get(routeProtection,webController.renderItemsPage);
 
 // Authentication
 router.route('/login').get(webController.renderLoginPage);

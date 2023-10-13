@@ -9,6 +9,10 @@ exports.renderHomePage = (req, res) => {
   res.render('index');
 };
 
+exports.renderItemsPage = (req, res) => {
+  res.render('items');
+};
+
 exports.renderProfilePage = (req, res, next) => {
   if (!req.session.user) {
     next(new AppError('No user found.', 500));
