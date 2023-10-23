@@ -35,7 +35,7 @@ exports.createItem = (req, res, next) => {
   let name = req.body.name;
   let unitOfMeasure = req.body.unitOfMeasure;
   let sourcedFrom = req.body.sourcedFrom;
-  let price = req.body.price.replace(/[&\/\\#,+()$~%'":*?<>{}]/g, "");
+  let price = req.body.price.replace(/[&\/\\#,+()a-zA-Z$~%'":*?<>{}]/g, "");
 
   try {
     const item = new Item({

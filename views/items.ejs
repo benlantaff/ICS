@@ -449,13 +449,13 @@
                         <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                         <div class="mb-3">
                           <label class="form-label" for="name">Name</label>
-                          <input type="text" class="form-control" name="name" id="name" placeholder="Eggs" />
+                          <input type="text" class="form-control" name="name" id="name" required placeholder="Eggs" />
                         </div>
                        
                          <div class="mb-3">
                         <label for="unitOfMeasure" class="form-label">Unit of Measure</label>
-                        <select class="form-select" name="unitOfMeasure" id="unitOfMeasure" aria-label="unitOfMeasure">
-                          <option selected="">Open this select menu</option>
+                        <select class="form-select" name="unitOfMeasure" required id="unitOfMeasure" aria-label="unitOfMeasure">
+                          <option selected="unknown">Unknown</option>
                           <option value="Box">Box</option>
                           <option value="Carton">Carton</option>
                           <option value="Each">Each</option>
@@ -466,13 +466,14 @@
                           <option value="Case">Case</option>
                           <option value="Gallon">Gallon</option>
                           <option value="Jar">Jar</option>
+                          <option value="Other">Other</option>
                         </select>
                       </div>
 
                         <div class="mb-3">
                         <label for="sourcedFrom" class="form-label">Sourced From</label>
-                        <select class="form-select" name="sourcedFrom" id="sourcedFrom" aria-label="sourcedFrom">
-                          <option selected="">Open this select menu</option>
+                        <select class="form-select" name="sourcedFrom" id="sourcedFrom" required aria-label="sourcedFrom">
+                          <option selected="unknown">Unkown</option>
                           <option value="1">Walmart</option>
                           <option value="2">Meijer</option>
                           <option value="3">Costco</option>
@@ -484,7 +485,7 @@
 
                          <div class="mb-3">
                           <label class="form-label" for="price">Price</label>
-                          <input type="text" class="form-control" name="price" id="price" placeholder="2.98" />
+                          <input type="text" value="0"class="form-control" name="price" required id="price" placeholder="2.98" />
                         </div>
                         
                     </div>
