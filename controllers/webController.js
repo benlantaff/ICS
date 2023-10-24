@@ -10,8 +10,18 @@ exports.renderHomePage = (req, res) => {
   res.render("index");
 };
 
-exports.renderItemsPage = (req, res) => {
-  res.render("items");
+exports.renderItemsPage = async (req, res) => {
+
+      await Item.find().then((item) => {
+        return res.render('items', {
+          items: item,
+        });
+      })
+      .catch((err) => {
+        next(new AppError('Error gathering items', 500));
+      });
+
+  // res.render("items");
 };
 
 exports.renderProfilePage = (req, res, next) => {
@@ -35,14 +45,14 @@ exports.createItem = (req, res, next) => {
   let name = req.body.name;
   let unitOfMeasure = req.body.unitOfMeasure;
   let sourcedFrom = req.body.sourcedFrom;
-  let price = req.body.price.replace(/[&\/\\#,+()a-zA-Z$~%'":*?<>{}]/g, "");
+  // let price = req.body.price.replace(/[&\/\\#,+()a-zA-Z$~%'":*?<>{}]/g, "");
 
   try {
     const item = new Item({
       name: name,
       unitOfMeasure: unitOfMeasure,
       sourcedFrom: sourcedFrom,
-      price: price,
+      // price: price,
     });
 
     item.save();

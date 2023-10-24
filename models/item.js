@@ -8,7 +8,7 @@ const itemSchema = new Schema({
   },
   unitOfMeasure: String,
   sourcedFrom: String,
-  price: Number,
+  // price: Number,
 });
 
 module.exports = mongoose.model("Item", itemSchema);
